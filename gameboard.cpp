@@ -58,6 +58,20 @@ bool GameBoard::place(const Player player, const int row, const int column) {
 }
 
 /**
+ * @brief Removes a player from the board.
+ * @param row The row to remove the player from.
+ * @param column The column to remove the player from.
+ * @return True if the player was removed successfully, false otherwise.
+ */
+bool GameBoard::remove(const int row, const int column) {
+	// check if row and column are in bounds
+	if (!inBounds(row, column)) return false;
+
+	board[row][column] = Player::NONE;
+	return true;
+}
+
+/**
  * @brief Checks if a field is free.
  * @param row The row to check.
  * @param column The column to check.
@@ -65,12 +79,22 @@ bool GameBoard::place(const Player player, const int row, const int column) {
  */
 bool GameBoard::isFree(const int row, const int column) const {
 	// check if row and column are in bounds
-	if (row >= rows || row < 0 || column >= columns || column < 0) return false;
+	if (!inBounds(row, column)) return false;
 
 	// check if selected field is not occupied
 	if (board[row][column] != Player::NONE) return false;
 
 	return true;
+}
+
+/**
+ * @brief Checks if a field is in bounds.
+ * @param row The row to check.
+ * @param column The column to check.
+ * @return True if the field is in bounds, false otherwise.
+ */
+bool GameBoard::inBounds(const int row, const int column) const {
+	return !(row >= rows || row < 0 || column >= columns || column < 0);
 }
 
 /**

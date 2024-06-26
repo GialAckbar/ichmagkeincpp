@@ -14,8 +14,10 @@ public:
 	Status getStatus() const;
 	int getDimension() const;
 	bool place(const Player player, const int row, const int column);
+	bool remove(const int row, const int column);
 	friend std::ostream& operator<<(std::ostream& out, GameBoard& board);
 private:
+	bool inBounds(const int row, const int column) const;
 	bool isFree(const int row, const int column) const;
 	Player checkLines(const bool horizontal) const;
 	Player checkDiagonal(const bool descending) const;

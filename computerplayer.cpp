@@ -1,4 +1,5 @@
 #include <random>
+#include <climits>
 #include "computerplayer.hpp"
 
 /**
@@ -49,11 +50,72 @@ void ComputerPlayer::randomPlay(GameBoard& board, int& row, int& column) {
 }
 
 /**
+ * @brief Recursive function to calculate the best move using the minimax algorithm.
+ * @param board The game board to play on.
+ * @param myself True if the current player is the computer player, false otherwise.
+ * @return The score of the best move.
+ */
+int ComputerPlayer::minimax(GameBoard& board, const bool myself) {
+	GameBoard::Status status = board.getStatus();
+
+	switch (status) {
+	case GameBoard::Status::PLAYER1_WON :
+		return (player == GameBoard::Player::PLAYER1) ? 10 : -10;
+	case GameBoard::Status::PLAYER2_WON :
+		return (player == GameBoard::Player::PLAYER2) ? 10 : -10;
+	case GameBoard::Status::DRAW :
+		return 0;
+	default:
+		break;
+	}
+
+	GameBoard::Player opponent = (player == GameBoard::Player::PLAYER1) ? GameBoard::Player::PLAYER2 : GameBoard::Player::PLAYER1;
+	int bestScore = myself ? INT_MIN : INT_MAX;
+
+	for (int curRow = 0; curRow < board.getDimension(); curRow++) {
+		for (int curColumn = 0; curColumn < board.getDimension(); curColumn++) {
+			if (!board.place(myself ? player : opponent, curRow, curColumn)) continue;
+
+			bestScore = myself ? std::max(bestScore, minimax(board, !myself)) : std::min(bestScore, minimax(board, !myself));
+			board.remove(curRow, curColumn);
+		}
+	}
+
+	return bestScore;
+}
+
+/**
  * @brief Plays a move on the board using the minimax algorithm.
  * @param board The game board to play on.
  * @param row The row to place the move.
  * @param column The column to place the move.
  */
 void ComputerPlayer::minimaxPlay(GameBoard& board, int& row, int& column) {
-	// Task02
+	int bestScore = INT_MIN;
+	int bestRow = -1;
+	int bestColumn = -1;
+
+	// Loop through all fields on the board.
+	for (int curRow = 0; curRow < board.getDimension(); curRow++) {
+		for (int curColumn = 0; curColumn < board.getDimension(); curColumn++) {
+			// If the field is already occupied, skip this field.
+			if (!board.place(player, curRow, curColumn)) continue;
+
+			int score = minimax(board, false);
+			board.remove(curRow, curColumn);
+
+			// If the score is better than the current best score, update the best score and move.
+			if (score > bestScore) {
+				bestScore = score;
+				bestRow = curRow;
+				bestColumn = curColumn;
+			}
+		}
+	}
+
+	// Place the move with the best score.
+	board.place(player, bestRow, bestColumn);
+
+	row = bestRow + 1;
+	column = bestColumn + 1;
 }

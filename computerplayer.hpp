@@ -14,6 +14,7 @@ public:
 private:
 	void randomPlay(GameBoard& board, int& row, int& column);
 	void minimaxPlay(GameBoard& board, int& row, int& column);
+	int minimax(GameBoard& board, const bool myself);
 	Mode mode;
 };
 
